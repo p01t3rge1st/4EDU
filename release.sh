@@ -4,12 +4,12 @@ set -euo pipefail
 #
 # Prosty skrypt release:
 # - podbija numer wersji (domyślnie PATCH)
-# - buduje projekt (CMake, Release)
-# - taguje w git i wypycha na origin
-# - GitHub Actions buduje AppImage / exe na podstawie taga
+# - aktualizuje plik VERSION
+# - tworzy commit i tag w git
+# - wypycha na origin → GitHub Actions buduje Flatpak automatycznie
 #
 
-REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$REPO_ROOT"
 
 if ! git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
@@ -58,6 +58,42 @@ case "$BUMP_KIND" in
   minor)
     ((MINOR++))
     PATCH=0
+    ;;
+  patch)
+    ((PATCH++))
+    ;;
+esac
+
+NEW_VERSION="${MAJOR}.${MINOR}.${PATCH}"
+TAG_NAME="v${NEW_VERSION}"
+
+echo "Aktualna wersja: ${CURRENT_VERSION}"
+echo "Nowa wersja:     ${NEW_VERSION}"
+
+if git rev-parse "refs/tags/${TAG_NAME}" >/dev/null 2>&1; then
+  echo "Tag ${TAG_NAME} już istnieje. Przerwano."
+  exit 1
+fi
+
+echo "${NEW_VERSION}" > VERSION
+
+# Zaktualizuj również wersję w pyproject.toml i __init__.py
+sed -i "s/^version = \".*\"/version = \"${NEW_VERSION}\"/" pyproject.toml
+sed -i "s/__version__ = \".*\"/__version__ = \"${NEW_VERSION}\"/" src/geiger_monitor/__init__.py
+
+echo "==> Tworzenie commita i taga..."
+git add VERSION pyproject.toml src/geiger_monitor/__init__.py
+git commit -m "Release ${TAG_NAME}"
+git tag "${TAG_NAME}"
+
+echo "==> Wypychanie na origin..."
+git push origin HEAD
+git push origin "${TAG_NAME}"
+
+echo
+echo "Release ${TAG_NAME} utworzony i wypchnięty."
+echo "GitHub Actions automatycznie zbuduje Flatpak."
+echo "Sprawdź postęp na: https://github.com/p01t3rge1st/4EDU/actions"
     ;;
   patch)
     ((PATCH++))

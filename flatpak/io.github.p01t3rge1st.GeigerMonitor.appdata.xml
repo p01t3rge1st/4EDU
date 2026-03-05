@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>io.github.p01t3rge1st.GeigerMonitor</id>
+
+  <name>Geiger Monitor</name>
+  <name xml:lang="pl">Monitor Geigera</name>
+
+  <summary>Real-time Geiger counter visualization</summary>
+  <summary xml:lang="pl">Wizualizacja danych z licznika Geigera w czasie rzeczywistym</summary>
+
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>MIT</project_license>
+
+  <description>
+    <p>
+      Geiger Monitor is a real-time radiation monitoring application for Linux.
+      It connects to a Geiger counter via serial port (USB/UART) and displays
+      live radiation data including counts per minute (CPM), counts per second (CPS),
+      and radiation dose rate in µSv/h.
+    </p>
+    <p>Features:</p>
+    <ul>
+      <li>Real-time CPM and CPS display</li>
+      <li>Live 60-second chart of CPS over time</li>
+      <li>Logarithmic analog gauge showing dose rate in µSv/h</li>
+      <li>Automatic serial port detection</li>
+      <li>Configurable µSv/h to CPS conversion factor</li>
+      <li>Full sample log with timestamps</li>
+    </ul>
+    <p xml:lang="pl">
+      Monitor Geigera to aplikacja do monitorowania promieniowania w czasie rzeczywistym dla systemu Linux.
+      Łączy się z licznikiem Geigera przez port szeregowy i wyświetla dane o promieniowaniu
+      w tym CPM, CPS i dawkę w µSv/h.
+    </p>
+  </description>
+
+  <url type="homepage">https://github.com/p01t3rge1st/4EDU</url>
+  <url type="bugtracker">https://github.com/p01t3rge1st/4EDU/issues</url>
+
+  <launchable type="desktop-id">io.github.p01t3rge1st.GeigerMonitor.desktop</launchable>
+
+  <categories>
+    <category>Science</category>
+    <category>Physics</category>
+  </categories>
+
+  <keywords>
+    <keyword>geiger</keyword>
+    <keyword>radiation</keyword>
+    <keyword>dosimetry</keyword>
+    <keyword>serial</keyword>
+    <keyword>physics</keyword>
+    <keyword>monitoring</keyword>
+  </keywords>
+
+  <provides>
+    <binary>geiger-monitor</binary>
+  </provides>
+
+  <releases>
+    <release version="1.0.0" date="2026-03-05">
+      <description>
+        <p>Initial public release.</p>
+        <ul>
+          <li>Python/PyQt5 implementation (migrated from C++)</li>
+          <li>Real-time Geiger counter monitoring via serial port</li>
+          <li>Live chart and logarithmic analog gauge</li>
+          <li>Flatpak distribution support</li>
+        </ul>
+      </description>
+    </release>
+  </releases>
+
+  <content_rating type="oars-1.1"/>
+</component>

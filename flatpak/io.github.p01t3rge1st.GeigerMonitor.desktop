@@ -1,0 +1,14 @@
+[Desktop Entry]
+Type=Application
+Name=Geiger Monitor
+Name[pl]=Monitor Geigera
+GenericName=Radiation Monitor
+GenericName[pl]=Monitor Promieniowania
+Comment=Real-time Geiger counter visualization
+Comment[pl]=Wizualizacja danych z licznika Geigera w czasie rzeczywistym
+Exec=geiger-monitor
+Icon=io.github.p01t3rge1st.GeigerMonitor
+Categories=Science;Physics;
+Keywords=geiger;radiation;dosimetry;serial;physics;
+Terminal=false
+StartupNotify=true

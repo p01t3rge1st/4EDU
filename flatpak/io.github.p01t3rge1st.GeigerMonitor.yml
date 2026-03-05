@@ -1,0 +1,67 @@
+app-id: io.github.p01t3rge1st.GeigerMonitor
+runtime: org.freedesktop.Platform
+runtime-version: '23.08'
+sdk: org.freedesktop.Sdk
+sdk-extensions:
+  - org.freedesktop.Sdk.Extension.python312
+
+command: geiger-monitor
+
+finish-args:
+  - --device=all           # dostęp do /dev/ttyUSB*, /dev/ttyACM* (licznik Geigera)
+  - --socket=wayland       # okno na Wayland
+  - --socket=x11           # fallback X11
+  - --share=ipc
+
+build-options:
+  append-path: /usr/lib/sdk/python312/bin
+  env:
+    PIP_PREFIX: /app
+    PIP_NO_BUILD_ISOLATION: 'off'
+
+modules:
+  - name: python-deps
+    buildsystem: simple
+    build-commands:
+      - /usr/lib/sdk/python312/bin/pip3 install
+          --prefix=/app
+          --no-cache-dir
+          --find-links wheels/
+          PyQt5==5.15.11
+          PyQtChart==5.15.7
+          pyserial==3.5
+    sources:
+      - type: dir
+        path: .
+
+  - name: geiger-monitor
+    buildsystem: simple
+    sources:
+      - type: git
+        url: https://github.com/p01t3rge1st/4EDU.git
+        tag: HEAD
+        dest: source
+    build-commands:
+      # Skopiuj pakiet Python
+      - install -d /app/lib/python3.12/site-packages
+      - cp -r source/src/geiger_monitor /app/lib/python3.12/site-packages/
+
+      # Skrypt startowy
+      - |
+        cat > /app/bin/geiger-monitor << 'SCRIPT'
+        #!/bin/sh
+        exec /usr/lib/sdk/python312/bin/python3 -m geiger_monitor.main "$@"
+        SCRIPT
+      - chmod +x /app/bin/geiger-monitor
+
+      # Ikona
+      - install -Dm644 source/flatpak/io.github.p01t3rge1st.GeigerMonitor.svg
+          /app/share/icons/hicolor/scalable/apps/io.github.p01t3rge1st.GeigerMonitor.svg
+
+      # Desktop entry
+      - install -Dm644 source/flatpak/io.github.p01t3rge1st.GeigerMonitor.desktop
+          /app/share/applications/io.github.p01t3rge1st.GeigerMonitor.desktop
+
+      # AppData
+      - install -Dm644 source/flatpak/io.github.p01t3rge1st.GeigerMonitor.appdata.xml
+          /app/share/metainfo/io.github.p01t3rge1st.GeigerMonitor.appdata.xml

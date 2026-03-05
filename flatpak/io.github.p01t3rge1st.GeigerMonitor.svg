@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128">
+  <!-- Background circle -->
+  <circle cx="64" cy="64" r="60" fill="#1e1e1e" stroke="#444" stroke-width="2"/>
+
+  <!-- Gauge arc (gray) -->
+  <path d="M 20 90 A 50 50 0 1 1 108 90" fill="none" stroke="#888" stroke-width="5" stroke-linecap="round"/>
+
+  <!-- Gauge arc filled (green zone) -->
+  <path d="M 20 90 A 50 50 0 0 1 64 14" fill="none" stroke="#4caf50" stroke-width="5" stroke-linecap="round"/>
+
+  <!-- Tick marks for decades -->
+  <line x1="64" y1="18" x2="64" y2="26" stroke="white" stroke-width="2"/>
+  <line x1="23" y1="87" x2="30" y2="83" stroke="white" stroke-width="2"/>
+  <line x1="105" y1="87" x2="98" y2="83" stroke="white" stroke-width="2"/>
+  <line x1="30" y1="40" x2="36" y2="46" stroke="white" stroke-width="2"/>
+  <line x1="98" y1="40" x2="92" y2="46" stroke="white" stroke-width="2"/>
+
+  <!-- Needle pointing mid-left (normal radiation) -->
+  <line x1="64" y1="64" x2="34" y2="48" stroke="#f44336" stroke-width="3.5" stroke-linecap="round"/>
+
+  <!-- Needle center dot -->
+  <circle cx="64" cy="64" r="5" fill="#f44336"/>
+
+  <!-- Label µSv/h -->
+  <text x="64" y="100" text-anchor="middle" font-family="sans-serif" font-size="10" fill="#aaa">µSv/h</text>
+
+  <!-- Radiation symbol (simplified) -->
+  <circle cx="64" cy="64" r="4" fill="#f44336" opacity="0.3"/>
+</svg>

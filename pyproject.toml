@@ -27,8 +27,8 @@ classifiers = [
 ]
 
 dependencies = [
-    "PyQt6>=6.0",
-    "PyQt6-Charts>=6.0",
+    "PyQt5>=5.15.0",
+    "PyQtChart>=5.15.0",
     "pyserial>=3.5",
 ]
 

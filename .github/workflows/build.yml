@@ -6,91 +6,51 @@ on:
       - "v*"
 
 jobs:
-  linux:
+  flatpak:
     runs-on: ubuntu-latest
+    container:
+      image: bilelmoussaoui/flatpak-github-actions:freedesktop-23.08
+      options: --privileged
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Install Qt and build tools
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y qtbase5-dev qtserialport5-dev cmake build-essential patchelf
-
-      - name: Configure
-        run: |
-          mkdir -p build
-          cd build
-          cmake ..
-
-      - name: Build
-        run: |
-          cd build
-          cmake --build . --config Release
-
-      - name: Download linuxdeploy and linuxdeployqt
-        run: |
-          mkdir -p tools
-          cd tools
-          wget -q https://github.com/linuxdeploy/linuxdeploy/releases/latest/download/linuxdeploy-x86_64.AppImage
-          wget -q https://github.com/probonopd/linuxdeployqt/releases/download/continuous/linuxdeployqt-x86_64.AppImage
-          chmod +x linuxdeploy-x86_64.AppImage linuxdeployqt-x86_64.AppImage
-
-      - name: Create AppImage
-        run: |
-          cd build
-          mkdir -p AppDir/usr/bin
-          cp GeigerMonitor AppDir/usr/bin/
-          # Proste AppDir, linuxdeploy uzupełni zależności
-          ../tools/linuxdeploy-x86_64.AppImage --appdir AppDir \
-            -e AppDir/usr/bin/GeigerMonitor \
-            -d ../misc/geigermonitor.desktop \
-            -i ../misc/geigermonitor.png \
-            --output appimage
-
-      - name: Upload Linux artifact
-        uses: actions/upload-artifact@v4
+      - name: Build Flatpak
+        uses: flatpak/flatpak-github-actions/flatpak-builder@v6
         with:
-          name: GeigerMonitor-linux-AppImage
-          path: build/*.AppImage
+          bundle: GeigerMonitor.flatpak
+          manifest-path: flatpak/io.github.p01t3rge1st.GeigerMonitor.yml
+          cache-key: flatpak-builder-${{ github.sha }}
 
-  windows:
-    runs-on: windows-latest
+  release:
+    needs: flatpak
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/')
+    permissions:
+      contents: write
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Install Qt
-        uses: jurplel/install-qt-action@v4
+      - name: Download Flatpak bundle
+        uses: actions/download-artifact@v4
         with:
-          version: "6.6.*"
-          host: "windows"
-          target: "desktop"
-          modules: "qtserialport"
+          name: GeigerMonitor.flatpak
 
-      - name: Configure
-        shell: bash
-        run: |
-          mkdir -p build
-          cd build
-          cmake .. -G "Ninja" -DCMAKE_BUILD_TYPE=Release
-
-      - name: Build
-        shell: bash
-        run: |
-          cd build
-          cmake --build . --config Release
-
-      - name: Deploy Qt (windeployqt)
-        shell: bash
-        run: |
-          cd build
-          EXE_PATH="$(pwd)/GeigerMonitor.exe"
-          "$QT_ROOT_DIR/bin/windeployqt.exe" --release "$EXE_PATH"
-
-      - name: Archive Windows build
-        uses: actions/upload-artifact@v4
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
         with:
-          name: GeigerMonitor-windows
-          path: build/**
+          files: GeigerMonitor.flatpak
+          generate_release_notes: true
+          body: |
+            ## Instalacja Flatpak
+
+            ```bash
+            flatpak install --user GeigerMonitor.flatpak
+            flatpak run io.github.p01t3rge1st.GeigerMonitor
+            ```
+
+            > **Wymaganie**: flatpak musi być zainstalowany (`sudo apt install flatpak`)
 
