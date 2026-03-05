@@ -1,0 +1,6 @@
+include README.md
+include LICENSE
+include requirements.txt
+include VERSION
+recursive-include src/geiger_monitor *.py
+recursive-include flatpak *.yml

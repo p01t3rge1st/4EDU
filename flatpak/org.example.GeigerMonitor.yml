@@ -1,0 +1,78 @@
+app-id: org.example.GeigerMonitor
+runtime: org.freedesktop.Platform
+runtime-version: '22.08'
+sdk: org.freedesktop.Sdk
+sdk-extensions:
+  - org.freedesktop.Sdk.Extension.python3
+
+command: geiger-monitor
+
+modules:
+  - name: python-modules
+    buildsystem: simple
+    build-commands:
+      - pip3 install --prefix=${FLATPAK_DEST} --no-cache-dir PyQt6==6.4.2 PyQt6-Charts==6.4.2 pyserial==3.5
+    # Install from requirements.txt if you prefer
+    # build-commands:
+    #   - pip3 install --prefix=${FLATPAK_DEST} --req requirements.txt
+
+  - name: geiger-monitor
+    buildsystem: simple
+    sources:
+      - type: dir
+        path: .
+    build-commands:
+      - mkdir -p /app/lib
+      - cp -r src/geiger_monitor /app/lib/
+      - install -Dm755 src/geiger_monitor/main.py /app/bin/geiger-monitor-py
+      - |
+        cat > /app/bin/geiger-monitor << 'EOF'
+        #!/bin/sh
+        exec python3 -m geiger_monitor.main
+        EOF
+      - chmod +x /app/bin/geiger-monitor
+      - |
+        cat > /app/share/applications/org.example.GeigerMonitor.desktop << 'EOF'
+        [Desktop Entry]
+        Type=Application
+        Name=Geiger Monitor
+        Comment=Radiation detection monitoring application
+        Exec=geiger-monitor
+        Icon=org.example.GeigerMonitor
+        Categories=Science;Physics;
+        Terminal=false
+        EOF
+      - |
+        cat > /app/share/metainfo/org.example.GeigerMonitor.appdata.xml << 'EOF'
+        <?xml version="1.0" encoding="UTF-8"?>
+        <component type="desktop-application">
+          <id>org.example.GeigerMonitor</id>
+          <name>Geiger Monitor</name>
+          <summary>Radiation detection monitoring application</summary>
+          <description>
+            <p>
+              Geiger Monitor is a real-time radiation monitoring application
+              that displays data from a Geiger counter connected via serial port.
+              It shows counts per minute (CPM), counts per second (CPS), and
+              radiation dose rate in µSv/h.
+            </p>
+          </description>
+          <url type="homepage">https://github.com/yourusername/geiger-monitor</url>
+          <metadata_license>CC0-1.0</metadata_license>
+          <project_license>MIT</project_license>
+          <releases>
+            <release version="1.0.0" date="2024-01-01">
+              <description>Initial release</description>
+            </release>
+          </releases>
+        </component>
+        EOF
+
+permissions:
+  - --device=all
+
+finish-args:
+  - --device=all
+  - --socket=wayland
+  - --socket=x11
+  - --share=network

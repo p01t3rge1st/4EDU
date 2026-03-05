@@ -1,0 +1,14 @@
+# Core dependencies for Geiger Monitor
+
+# Qt6 framework for the GUI
+PyQt6>=6.0.0
+PyQt6-Charts>=6.0.0
+
+# Serial communication
+pyserial>=3.5
+
+# Development dependencies (optional)
+# pytest>=7.0.0
+# black>=22.0.0
+# flake8>=4.0.0
+# mypy>=0.950

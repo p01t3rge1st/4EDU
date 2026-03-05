@@ -1,0 +1,2 @@
+set(__QT_DEPLOY_TARGET_GeigerMonitor_FILE /home/mati/Documents/Cursor/4EDU/GeigerMonitor)
+set(__QT_DEPLOY_TARGET_GeigerMonitor_TYPE EXECUTABLE)
