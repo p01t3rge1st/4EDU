@@ -1,7 +1,7 @@
 """Entry point for Geiger Monitor application."""
 
 import sys
-from PyQt6.QtWidgets import QApplication
+from PyQt5.QtWidgets import QApplication
 
 from geiger_monitor.main_window import MainWindow
 

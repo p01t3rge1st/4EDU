@@ -1,9 +1,9 @@
 """Analog gauge widget for displaying radiation dose rate on a logarithmic scale."""
 
 import math
-from PyQt6.QtCore import Qt
-from PyQt6.QtGui import QPainter, QColor, QPen, QBrush, QFont
-from PyQt6.QtWidgets import QWidget
+from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QPainter, QColor, QPen, QBrush, QFont
+from PyQt5.QtWidgets import QWidget
 
 
 class AnalogGauge(QWidget):
@@ -87,19 +87,19 @@ class AnalogGauge(QWidget):
             return start_angle_deg + t * (end_angle_deg - start_angle_deg)
 
         # Background
-        painter.setPen(Qt.PenStyle.NoPen)
+        painter.setPen(Qt.NoPen)
         painter.setBrush(QColor(30, 30, 30))
-        painter.drawEllipse(0, 0, 95, 95)
+        painter.drawEllipse(-95, -95, 190, 190)
 
         # Scale arc
-        painter.setPen(QPen(Qt.GlobalColor.lightGray, 3))
+        painter.setPen(QPen(Qt.lightGray, 3))
         arc_rect = (-80, -80, 160, 160)
         angle_span = int((start_angle_deg - end_angle_deg) * 16)
         start_angle = int((90 - start_angle_deg) * 16)
         painter.drawArc(*arc_rect, start_angle, angle_span)
 
         # Decade markers
-        painter.setPen(QPen(Qt.GlobalColor.white, 2))
+        painter.setPen(QPen(Qt.white, 2))
         decades = [0.01, 0.1, 1.0, 10.0, 100.0, 1000.0]
         for decade in decades:
             if decade < self.m_min or decade > self.m_max:
@@ -132,12 +132,12 @@ class AnalogGauge(QWidget):
             painter.setFont(font)
             painter.drawText(
                 int(pt_x - 12), int(pt_y - 8), 24, 16,
-                Qt.AlignmentFlag.AlignCenter, label
+                Qt.AlignCenter, label
             )
 
         # Needle
         angle = math.radians(value_to_angle(self.m_value))
-        painter.setPen(QPen(Qt.GlobalColor.red, 3))
+        painter.setPen(QPen(Qt.red, 3))
         r_needle = 75.0
         p1_x, p1_y = 0, 0
         p2_x = r_needle * math.cos(angle)
@@ -145,13 +145,13 @@ class AnalogGauge(QWidget):
         painter.drawLine(int(p1_x), int(p1_y), int(p2_x), int(p2_y))
 
         # Center point
-        painter.setBrush(Qt.GlobalColor.red)
-        painter.setPen(Qt.PenStyle.NoPen)
+        painter.setBrush(Qt.red)
+        painter.setPen(Qt.NoPen)
         painter.drawEllipse(-4, -4, 8, 8)
 
         # Label
-        painter.setPen(Qt.GlobalColor.white)
+        painter.setPen(Qt.white)
         font = painter.font()
         font.setPointSize(8)
         painter.setFont(font)
-        painter.drawText(-60, 40, 120, 20, Qt.AlignmentFlag.AlignCenter, "µSv/h (log)")
+        painter.drawText(-60, 40, 120, 20, Qt.AlignCenter, "µSv/h (log)")

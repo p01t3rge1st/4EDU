@@ -1,15 +1,14 @@
 """Main application window for Geiger Monitor."""
 
 from datetime import datetime, timedelta
-from PyQt6.QtCore import Qt, pyqtSlot
-from PyQt6.QtGui import QDoubleValidator
-from PyQt6.QtWidgets import (
+from PyQt5.QtCore import Qt, pyqtSlot, QDateTime
+from PyQt5.QtGui import QDoubleValidator
+from PyQt5.QtWidgets import (
     QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QGridLayout,
     QComboBox, QPushButton, QLabel, QPlainTextEdit, QDoubleSpinBox
 )
-from PyQt6.QtSerialPort import QSerialPort, QSerialPortInfo
-from PyQt6.QtChart import QChart, QChartView, QLineSeries
-from PyQt6.QtCore import QDateTime
+from PyQt5.QtSerialPort import QSerialPort, QSerialPortInfo
+from PyQt5.QtChart import QChart, QChartView, QLineSeries, QValueAxis
 
 from .analog_gauge import AnalogGauge
 
@@ -121,7 +120,6 @@ class MainWindow(QMainWindow):
         chart.legend().hide()
         chart.setTitle(self.tr("CPS w czasie"))
 
-        from PyQt6.QtChart import QValueAxis
         self.m_axis_x = QValueAxis(self)
         self.m_axis_x.setTitleText(self.tr("Czas (s, ostatnie 60 s)"))
         self.m_axis_x.setRange(0.0, 60.0)
@@ -130,8 +128,8 @@ class MainWindow(QMainWindow):
         self.m_axis_y.setTitleText(self.tr("CPS"))
         self.m_axis_y.setRange(0.0, 100.0)
 
-        chart.addAxis(self.m_axis_x, Qt.AlignmentFlag.AlignBottom)
-        chart.addAxis(self.m_axis_y, Qt.AlignmentFlag.AlignLeft)
+        chart.addAxis(self.m_axis_x, Qt.AlignBottom)
+        chart.addAxis(self.m_axis_y, Qt.AlignLeft)
         self.m_series.attachAxis(self.m_axis_x)
         self.m_series.attachAxis(self.m_axis_y)
 
@@ -201,13 +199,13 @@ class MainWindow(QMainWindow):
         self.m_serial.setPortName(port_name)
 
         # Typical Geiger counter settings
-        self.m_serial.setBaudRate(QSerialPort.BaudRate.Baud9600)
-        self.m_serial.setDataBits(QSerialPort.DataBits.Data8)
-        self.m_serial.setParity(QSerialPort.Parity.NoParity)
-        self.m_serial.setStopBits(QSerialPort.StopBits.OneStop)
-        self.m_serial.setFlowControl(QSerialPort.FlowControl.NoFlowControl)
+        self.m_serial.setBaudRate(QSerialPort.Baud9600)
+        self.m_serial.setDataBits(QSerialPort.Data8)
+        self.m_serial.setParity(QSerialPort.NoParity)
+        self.m_serial.setStopBits(QSerialPort.OneStop)
+        self.m_serial.setFlowControl(QSerialPort.NoFlowControl)
 
-        if not self.m_serial.open(QSerialPort.OpenModeFlag.ReadOnly):
+        if not self.m_serial.open(QSerialPort.ReadOnly):
             error = self.m_serial.errorString()
             self.m_status_label.setText(self.tr(f"Błąd otwarcia portu: {error}"))
             return
